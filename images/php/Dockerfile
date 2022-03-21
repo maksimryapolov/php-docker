@@ -8,6 +8,14 @@ FROM php:7.4-fpm
 # В данном случае мы установим некоторые зависимости и модули PHP.
 # Для установки модулей используем команду docker-php-ext-install.
 # На каждый RUN создается новый слой в образе, поэтому рекомендуется объединять команды.
+
+# RUN apt-get update && apt-get install -y \
+#         libfreetype6-dev \
+#         libjpeg62-turbo-dev \
+#         libpng-dev \
+#     && docker-php-ext-configure gd --with-freetype --with-jpeg \
+#     && docker-php-ext-install -j$(nproc) gd
+
 RUN apt-get update && apt-get install -y \
         curl \
         wget \
@@ -16,8 +24,10 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
-    && docker-php-ext-install -j$(nproc) iconv mcrypt mbstring mysqli pdo_mysql zip \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install mysqli pdo pdo_mysql \
+    # && docker-php-ext-install -j$(nproc) iconv mcrypt mbstring mysqli pdo_mysql zip \
+    # && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
     
 # Куда же без composer'а.
@@ -33,3 +43,6 @@ WORKDIR /var/www
 # Из документации: The main purpose of a CMD is to provide defaults for an executing container. These defaults can include an executable, 
 # or they can omit the executable, in which case you must specify an ENTRYPOINT instruction as well.
 CMD ["php-fpm"]
+
+
+
